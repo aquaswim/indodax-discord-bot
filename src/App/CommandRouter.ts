@@ -19,7 +19,7 @@ class CommandRouter implements ICommandRouter{
 
     private static async notFoundHandler(cmd: CommandMessage): Promise<HandlerResult> {
         return {
-            content: `"${cmd.command}" Command Not Found!`
+            content: `**"${cmd.command}"** Command Not Found!`
         }
     }
 
