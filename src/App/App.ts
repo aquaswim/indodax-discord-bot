@@ -1,15 +1,18 @@
 import {inject, singleton} from "tsyringe";
-import {Client, Message} from "discord.js";
+import {Client, Message, MessageEmbed} from "discord.js";
 import {ICommandParser} from "./CommandParser";
-import {ICommandRouter} from "./CommandRouter";
+import Dict = NodeJS.Dict;
+import ICommandHandler from "../Contracts/CommandHandler";
+import {notStrictEqual} from "assert";
 
 @singleton()
 class App {
+    private readonly handlerDict: Dict<ICommandHandler>;
     constructor(
         private discordClient: Client,
-        @inject("ICommandParser") private cmdParser: ICommandParser,
-        @inject("ICommandRouter") private cmdRouter: ICommandRouter
+        @inject("ICommandParser") private cmdParser: ICommandParser
     ) {
+        this.handlerDict = {};
     }
 
     start() {
@@ -26,9 +29,26 @@ class App {
 
     private async processMessages(msg: Message){
         if (msg.content.startsWith(process.env.PREFIX || "&")) {
-            const command = this.cmdParser.parseMessage(msg);
-            await msg.reply(await this.cmdRouter.handle(command));
+            try{
+                const command = this.cmdParser.parseMessage(msg);
+                if (this.handlerDict.hasOwnProperty(command.command)) {
+                    await msg.reply(await this.handlerDict[command.command]!(command));
+                    return;
+                }
+                throw new Error("Command not found");
+            }catch (e) {
+                await msg.reply("", {
+                    embed: (new MessageEmbed())
+                        .setTitle("Command error")
+                        .setDescription(e.message)
+                })
+            }
         }
+    }
+
+    public registerHandler(command: string, handler: ICommandHandler): App {
+        this.handlerDict[command] = handler;
+        return this;
     }
 }
 
