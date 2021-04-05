@@ -1,14 +1,14 @@
-import IHandler , {HandlerResult} from "../Contracts/CommandHandler";
+import ICommandHandler , {HandlerResult} from "../Contracts/CommandHandler";
 import CommandMessage from "../Entities/CommandMessage";
 import Dict = NodeJS.Dict;
 
 export interface ICommandRouter {
-    registerHandler(command: string, handler: IHandler): void;
+    registerHandler(command: string, handler: ICommandHandler): void;
     handle(cmd: CommandMessage): Promise<HandlerResult>;
 }
 
 class CommandRouter implements ICommandRouter{
-    private handlerDict: Dict<IHandler> = {};
+    private handlerDict: Dict<ICommandHandler> = {};
     handle(cmd: CommandMessage): Promise<HandlerResult> {
         if (this.handlerDict.hasOwnProperty(cmd.command)) {
             return this.handlerDict[cmd.command]!(cmd);
@@ -23,7 +23,7 @@ class CommandRouter implements ICommandRouter{
         }
     }
 
-    registerHandler(command: string, handler: IHandler): void {
+    registerHandler(command: string, handler: ICommandHandler): void {
         this.handlerDict[command] = handler;
     }
 
