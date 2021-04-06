@@ -15,7 +15,7 @@ class StopAlertHandler implements ICommandHandler{
         }
         this.priceAlerter.removeAlert(id);
         return {
-            content: "Pong!"
+            content: `Alert ${id} stopped`
         };
     }
 
