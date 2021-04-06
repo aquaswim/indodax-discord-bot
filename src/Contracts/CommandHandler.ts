@@ -3,6 +3,8 @@ import {MessageOptions} from "discord.js";
 
 export type HandlerResult = (MessageOptions & { split?: false });
 
-export type ICommandHandler = (cmd: CommandMessage)=>Promise<HandlerResult>;
+interface ICommandHandler {
+    handle(cmd: CommandMessage): Promise<HandlerResult>
+}
 
 export default ICommandHandler;

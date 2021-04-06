@@ -3,7 +3,7 @@ import {config} from "dotenv";
 import {container} from "tsyringe";
 import "./App/register-providers";
 import App from "./App/App";
-import pingHandler from "./Commands/Ping";
+import PingHandler from "./Commands/Ping";
 
 // initialize dotenv
 config();
@@ -11,7 +11,7 @@ config();
 const app = container.resolve(App);
 
 // register commands
-app.registerHandler("ping", pingHandler);
+app.registerHandler("ping", container.resolve(PingHandler));
 
 // start the app
 app.start();

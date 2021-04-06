@@ -3,7 +3,6 @@ import {Client, Message, MessageEmbed} from "discord.js";
 import {ICommandParser} from "./CommandParser";
 import Dict = NodeJS.Dict;
 import ICommandHandler from "../Contracts/CommandHandler";
-import {notStrictEqual} from "assert";
 
 @singleton()
 class App {
@@ -32,7 +31,7 @@ class App {
             try{
                 const command = this.cmdParser.parseMessage(msg);
                 if (this.handlerDict.hasOwnProperty(command.command)) {
-                    await msg.reply(await this.handlerDict[command.command]!(command));
+                    await msg.reply(await this.handlerDict[command.command]!.handle(command));
                     return;
                 }
                 throw new Error("Command not found");
