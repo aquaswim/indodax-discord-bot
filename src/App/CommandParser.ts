@@ -11,7 +11,7 @@ export class CommandParser implements ICommandParser{
     }
     parseMessage(msg: Message): CommandMessage {
         const wordArray = msg.content.slice(msg.content.indexOf(this.prefix)+1).split(" ");
-        return new CommandMessage(wordArray[0], wordArray.slice(1));
+        return new CommandMessage(wordArray[0], wordArray.slice(1), msg);
     }
 
 }
