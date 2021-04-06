@@ -6,6 +6,7 @@ import App from "./App/App";
 import PingHandler from "./Commands/Ping";
 import StopAlertHandler from "./Commands/StopAlert";
 import AlertHandler from "./Commands/Alert";
+import ListHandler from "./Commands/List";
 
 // initialize dotenv
 config();
@@ -16,6 +17,7 @@ const app = container.resolve(App);
 app.registerHandler("ping", PingHandler);
 app.registerHandler("alert", AlertHandler);
 app.registerHandler("stop-alert", StopAlertHandler);
+app.registerHandler("list", ListHandler);
 
 // start the app
 app.start();
