@@ -46,9 +46,15 @@ class IndodaxCryptoPrices implements CryptoPricesRepository{
             const parsedData = JSON.parse(data.toString());
             if (parsedData.tick) {
                 const tickData = parsedData.tick as IWSTick;
-                if (this.subjectDict[tickData.pair] && this.subjectDict[tickData.pair]!.lastUpdate < tickData.t) {
+                if (this.subjectDict[tickData.pair]!.lastUpdate >= tickData.t) {
+                    return;
+                }
+                this.subjectDict[tickData.pair]!.lastUpdate = tickData.t;
+                if (this.subjectDict[tickData.pair]) {
                     const subject = this.subjectDict[tickData.pair]!.subject;
                     if (subject.observers.length > 0) {
+                        // tick data is in second and need to be converted to ms
+                        tickData.t *= 1000;
                         subject.next(tickData);
                     } else {
                         console.log("price detected in", tickData.pair, "but no observer found!");
@@ -87,6 +93,7 @@ class IndodaxCryptoPrices implements CryptoPricesRepository{
 
     private _sendUnsubscribeCommand(coidId: string){
         this.wsMustReady();
+        console.log("sending unsubscribe command for", coidId);
         this.ws.send(JSON.stringify({
             unsub: IndodaxCryptoPrices.generateSubChannelForId(coidId),
             id: coidId
@@ -95,6 +102,7 @@ class IndodaxCryptoPrices implements CryptoPricesRepository{
 
     private _sendSubscribeCommand(coidId: string){
         this.wsMustReady();
+        console.log("sending subscribe command for", coidId);
         this.ws.send(JSON.stringify({
             sub: IndodaxCryptoPrices.generateSubChannelForId(coidId),
             id: coidId

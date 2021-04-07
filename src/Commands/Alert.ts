@@ -24,13 +24,14 @@ class AlertHandler implements ICommandHandler{
 
         const alert = this.priceAlerter.addAlert(coinId!, operand as AlertOperand, amount!, (data, alert)=>{
             const embed = new MessageEmbed();
-            embed.addField("id", alert.getId());
-            embed.addField("trigger", `${coinId} ${operand} ${amount.toLocaleString("id")}`);
-            embed.addField("C", data.c.toLocaleString("id"), true);
-            embed.addField("H", data.h.toLocaleString("id"), true);
-            embed.addField("L", data.l.toLocaleString("id"), true);
-            embed.addField("O", data.o.toLocaleString("id"), true);
-            embed.addField("V", data.v.toLocaleString("id"), true);
+            embed.addField("id", alert.getId())
+                .addField("trigger", `${coinId} ${operand} ${amount.toLocaleString("id")}`)
+                .addField("C", data.c.toLocaleString("id"), true)
+                .addField("H", data.h.toLocaleString("id"), true)
+                .addField("L", data.l.toLocaleString("id"), true)
+                .addField("O", data.o.toLocaleString("id"), true)
+                .addField("V", data.v.toLocaleString("id"), true)
+                .setFooter(`time ${new Date(data.t)}`)
             cmd.message.channel.send(`Alert ${alert.getId()} triggered`, {
                 embed
             });

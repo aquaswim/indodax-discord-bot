@@ -1,6 +1,6 @@
 import {inject, singleton} from "tsyringe";
 import Dict = NodeJS.Dict;
-import {generateIdSimple} from "../Helpers/generateId";
+import {generateIdSimpleV2} from "../Helpers/generateId";
 import CryptoPricesRepository from "../Repositories/CryptoPrices";
 import PriceKlineTick from "../Entities/PriceKlineTick";
 import {Subject, Subscription} from "rxjs";
@@ -86,7 +86,7 @@ class PriceAlert {
     }
 
     addAlert(coinId: string, operand: AlertOperand, amount: number, callback: AlertCallback): Alert{
-        const id = `${coinId}-${generateIdSimple()}`;
+        const id = `${coinId}-${generateIdSimpleV2()}`;
         if (!this.alerts[coinId]) {
             this.alerts[coinId] = new ParentAlert(
                 coinId,
