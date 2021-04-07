@@ -47,6 +47,7 @@ class App {
     }
 
     public registerHandler(command: string, handler: ICommandHandler | InjectionToken<ICommandHandler>): App {
+        console.log("register command", command);
         if ((<ICommandHandler>handler).handle) {
             this.handlerDict[command] = handler as ICommandHandler;
         } else {
