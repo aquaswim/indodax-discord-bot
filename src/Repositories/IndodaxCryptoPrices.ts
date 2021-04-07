@@ -5,6 +5,7 @@ import {CoinInfo} from "../Entities/CoinInfo";
 import PriceKlineTick from "../Entities/PriceKlineTick";
 import {Subject} from "rxjs";
 import Dict = NodeJS.Dict;
+import CoinDetail from "../Entities/CoinDetail";
 
 const coinListUrl = "https://indodax.com/api/pairs/";
 const kLineUrl = "wss://kline.indodax.com/ws/";
@@ -118,6 +119,18 @@ class IndodaxCryptoPrices implements CryptoPricesRepository{
             this._sendSubscribeCommand(coinId);
         }
         return this.subjectDict[coinId]!.subject;
+    }
+
+    async getCoinDetail(coinId: string): Promise<CoinDetail> {
+        return {
+            active: false,
+            code: "",
+            logo: "",
+            name: "",
+            price: {
+
+            }
+        }
     }
 }
 

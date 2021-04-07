@@ -7,6 +7,7 @@ import PingHandler from "./Commands/Ping";
 import StopAlertHandler from "./Commands/StopAlert";
 import AlertHandler from "./Commands/Alert";
 import ListHandler from "./Commands/List";
+import GetPriceHandler from "./Commands/Price";
 
 // initialize dotenv
 config();
@@ -18,6 +19,7 @@ app.registerHandler("ping", PingHandler);
 app.registerHandler("alert", AlertHandler);
 app.registerHandler("stop-alert", StopAlertHandler);
 app.registerHandler("list", ListHandler);
+app.registerHandler("price", GetPriceHandler);
 
 // start the app
 app.start();
