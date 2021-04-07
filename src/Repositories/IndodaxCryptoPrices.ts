@@ -6,16 +6,16 @@ import PriceKlineTick from "../Entities/PriceKlineTick";
 import {Subject} from "rxjs";
 import Dict = NodeJS.Dict;
 
-const coinListUrl = "https://indodax.com/api/ticker_all";
+const coinListUrl = "https://indodax.com/api/pairs/";
 const kLineUrl = "wss://kline.indodax.com/ws/";
 
 // coin list response parser goes here
 const responseParser = (response: any): CoinInfo[] => {
-    return Object.keys(response.tickers).map(code => {
+    return response.map((pair: any) => {
         return {
-            name: "N/A", // todo: since i make this part when /api/pairs down
-            code,
-            active: true,
+            name: pair.description, // todo: since i make this part when /api/pairs down
+            code: pair.id,
+            active: pair.is_maintenance === 0,
         }
     });
 }

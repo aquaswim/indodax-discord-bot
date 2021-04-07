@@ -13,7 +13,7 @@ class ListHandler implements ICommandHandler{
         const coins = await this.cryptoPriceRepo.getCoinList();
         let embed = new MessageEmbed();
         embed.setTitle("List Crypto")
-            .setDescription(coins.map(coins=>coins.code).join(" | "));
+            .setDescription(coins.filter(coin => coin.active).map(coin=>coin.code).join(" | "));
         return {
             content: "",
             embed
