@@ -1,8 +1,9 @@
-import {inject, singleton} from "tsyringe";
+import {container, inject, singleton} from "tsyringe";
 import {Client, Message, MessageEmbed} from "discord.js";
 import {ICommandParser} from "./CommandParser";
 import Dict = NodeJS.Dict;
 import ICommandHandler from "../Contracts/CommandHandler";
+import InjectionToken from "tsyringe/dist/typings/providers/injection-token";
 
 @singleton()
 class App {
@@ -45,8 +46,12 @@ class App {
         }
     }
 
-    public registerHandler(command: string, handler: ICommandHandler): App {
-        this.handlerDict[command] = handler;
+    public registerHandler(command: string, handler: ICommandHandler | InjectionToken<ICommandHandler>): App {
+        if ((<ICommandHandler>handler).handle) {
+            this.handlerDict[command] = handler as ICommandHandler;
+        } else {
+            this.handlerDict[command] = container.resolve(handler as InjectionToken<ICommandHandler>);
+        }
         return this;
     }
 }

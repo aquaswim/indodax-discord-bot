@@ -19,6 +19,9 @@
     "@types/chai": "^4.2.16",
     "@types/mocha": "^8.2.2",
     "@types/node": "^14.14.37",
+    "@types/node-fetch": "^2.5.9",
+    "@types/randomstring": "^1.1.6",
+    "@types/ws": "^7.4.1",
     "chai": "^4.3.4",
     "mocha": "^8.3.2",
     "nyc": "^15.1.0",
@@ -28,7 +31,11 @@
   "dependencies": {
     "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
+    "node-fetch": "^2.6.1",
+    "randomstring": "^1.1.5",
     "reflect-metadata": "^0.1.13",
-    "tsyringe": "^4.5.0"
+    "rxjs": "^6.6.7",
+    "tsyringe": "^4.5.0",
+    "ws": "^7.4.4"
   }
 }
