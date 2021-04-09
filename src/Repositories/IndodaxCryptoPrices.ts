@@ -6,8 +6,10 @@ import PriceKlineTick from "../Entities/PriceKlineTick";
 import {Subject} from "rxjs";
 import Dict = NodeJS.Dict;
 import CoinDetail from "../Entities/CoinDetail";
+import _ from "lodash";
 
 const coinListUrl = "https://indodax.com/api/pairs/";
+const tickerUrl = "https://indodax.com/api/ticker/";
 const kLineUrl = "wss://kline.indodax.com/ws/";
 
 // coin list response parser goes here
@@ -32,14 +34,15 @@ interface IWSTick {
     v: number;
 }
 
-class IndodaxCryptoPrices implements CryptoPricesRepository{
+class IndodaxCryptoPrices implements CryptoPricesRepository {
     private ws: Websocket;
     private wsReady = false;
-    private readonly subjectDict: Dict<{lastUpdate: number, subject: Subject<PriceKlineTick>}>;
+    private readonly subjectDict: Dict<{ lastUpdate: number, subject: Subject<PriceKlineTick> }>;
+
     constructor() {
         this.subjectDict = {};
         this.ws = new Websocket(kLineUrl);
-        this.ws.on("open", ()=>{
+        this.ws.on("open", () => {
             console.log("Websocket connection to", kLineUrl, "opened");
             this.wsReady = true;
         });
@@ -72,7 +75,7 @@ class IndodaxCryptoPrices implements CryptoPricesRepository{
             }
         });
         this.ws.on("error", err => {
-            console.error("Websocket connection to",kLineUrl,"error", err);
+            console.error("Websocket connection to", kLineUrl, "error", err);
         })
     }
 
@@ -92,7 +95,7 @@ class IndodaxCryptoPrices implements CryptoPricesRepository{
         if (!this.wsReady) throw new Error("Web socket is not ready");
     }
 
-    private _sendUnsubscribeCommand(coidId: string){
+    private _sendUnsubscribeCommand(coidId: string) {
         this.wsMustReady();
         console.log("sending unsubscribe command for", coidId);
         this.ws.send(JSON.stringify({
@@ -101,7 +104,7 @@ class IndodaxCryptoPrices implements CryptoPricesRepository{
         }));
     }
 
-    private _sendSubscribeCommand(coidId: string){
+    private _sendSubscribeCommand(coidId: string) {
         this.wsMustReady();
         console.log("sending subscribe command for", coidId);
         this.ws.send(JSON.stringify({
@@ -122,13 +125,37 @@ class IndodaxCryptoPrices implements CryptoPricesRepository{
     }
 
     async getCoinDetail(coinId: string): Promise<CoinDetail> {
+        const coinTickerUrl = `${tickerUrl}${coinId}`;
+        const responses = await Promise.all([
+            fetch(coinListUrl),
+            fetch(coinTickerUrl)
+        ]);
+        for (let response of responses) {
+            if (!response.ok) {
+                throw new Error(`Request error: ${response.url}: ${response.statusText}`);
+            }
+        }
+        const [coinListResponse, tickerResponse] = await Promise.all([responses[0].json(), responses[1].json()]);
+        if (tickerResponse.error) {
+            throw new Error(`Ticker reselt in error ${tickerResponse.error_description}`);
+        }
+        const coinDetail = _.find(coinListResponse, (coin) => coin.id === coinId);
+        if (!coinDetail) {
+            throw new Error("Coin not found in pairs list");
+        }
         return {
             active: false,
-            code: "",
-            logo: "",
-            name: "",
+            code: coinDetail.id,
+            logo: coinDetail.url_logo_png,
+            name: coinDetail.description,
             price: {
-
+                h: parseInt(tickerResponse.ticker.low, 10),
+                l: parseInt(tickerResponse.ticker.high, 10),
+                vol: parseInt(tickerResponse.ticker.vol, 10),
+                last: parseInt(tickerResponse.ticker.last, 10),
+                buy: parseInt(tickerResponse.ticker.buy, 10),
+                sell: parseInt(tickerResponse.ticker.sell, 10),
+                t: parseInt(tickerResponse.ticker.server_time, 10) * 1000,
             }
         }
     }
