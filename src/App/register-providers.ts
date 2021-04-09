@@ -6,7 +6,9 @@ import {Lifecycle} from "tsyringe";
 
 // register all class
 container.register(Client, {
-    useValue: new Client()
+    useValue: new Client({
+        retryLimit: 10
+    })
 });
 
 container.register("ICommandParser", {
