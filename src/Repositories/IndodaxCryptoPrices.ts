@@ -78,7 +78,7 @@ class IndodaxCryptoPrices implements CryptoPricesRepository{
     }
 
     private static generateSubChannelForId(coinId: string) {
-        return `${coinId}.kline.1m`;
+        return `${coinId}.kline.30m`;
     }
 
     private wsMustReady() {
