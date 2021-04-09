@@ -1,7 +1,7 @@
 {
-  "name": "my-awesome-app",
+  "name": "indodax-discord-bot",
   "version": "0.0.1",
-  "description": "My Awesome app description",
+  "description": "Indodax crypto price alert discord bot",
   "scripts": {
     "build": "tsc",
     "start": "node dist",
@@ -10,7 +10,7 @@
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test"
   },
   "keywords": [
-    "awesome"
+    "discord-bot", "indodax-bot"
   ],
   "author": "Bayu Setiawan",
   "license": "MIT",
