@@ -144,7 +144,7 @@ class IndodaxCryptoPrices implements CryptoPricesRepository {
             throw new Error("Coin not found in pairs list");
         }
         return {
-            active: false,
+            active: coinDetail.is_maintenance === 0,
             code: coinDetail.id,
             logo: coinDetail.url_logo_png,
             name: coinDetail.description,
