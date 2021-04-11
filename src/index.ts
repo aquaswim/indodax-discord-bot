@@ -15,11 +15,12 @@ config();
 const app = container.resolve(App);
 
 // register commands
-app.registerHandler("ping", PingHandler);
-app.registerHandler("alert", AlertHandler);
-app.registerHandler("stop-alert", StopAlertHandler);
-app.registerHandler("list", ListHandler);
-app.registerHandler("price", GetPriceHandler);
+app
+    .registerHandler("ping", PingHandler)
+    .registerHandler("alert", AlertHandler)
+    .registerHandler("stop-alert", StopAlertHandler)
+    .registerHandler("list", ListHandler)
+    .registerHandler("price", GetPriceHandler);
 
 // start the app
 app.start();
