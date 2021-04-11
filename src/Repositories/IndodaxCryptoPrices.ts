@@ -149,8 +149,8 @@ class IndodaxCryptoPrices implements CryptoPricesRepository {
             logo: coinDetail.url_logo_png,
             name: coinDetail.description,
             price: {
-                h: parseInt(tickerResponse.ticker.low, 10),
-                l: parseInt(tickerResponse.ticker.high, 10),
+                h: parseInt(tickerResponse.ticker.high, 10),
+                l: parseInt(tickerResponse.ticker.low, 10),
                 vol: parseInt(tickerResponse.ticker.vol, 10),
                 last: parseInt(tickerResponse.ticker.last, 10),
                 buy: parseInt(tickerResponse.ticker.buy, 10),
