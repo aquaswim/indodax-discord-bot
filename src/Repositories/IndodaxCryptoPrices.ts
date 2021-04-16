@@ -79,6 +79,9 @@ class IndodaxCryptoPrices implements CryptoPricesRepository {
         this.ws.on("error", err => {
             console.error("Websocket connection to", kLineUrl, "error", err);
         })
+        this.ws.on("close", (ws: Websocket, code:number, message: string)=> {
+           console.error("Connection to", kLineUrl, "closed:", message)
+        }); 
     }
 
     async getCoinList(): Promise<CoinInfo[]> {
@@ -138,7 +141,7 @@ class IndodaxCryptoPrices implements CryptoPricesRepository {
             logo: coinDetail.url_logo_png,
             name: coinDetail.description,
             price: {
-              
+
                 h: parseInt(tickerResponse.ticker.high, 10),
                 l: parseInt(tickerResponse.ticker.low, 10),
                 vol: parseInt(tickerResponse.ticker.vol_idr || tickerResponse.ticker.vol_usdt || "", 10),
