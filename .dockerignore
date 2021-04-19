@@ -117,3 +117,12 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+
+# other stuff
+.git
+.github
+build-image.sh
+.editorconfig
+Dockerfile
+README.md
+tests
