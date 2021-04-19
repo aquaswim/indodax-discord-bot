@@ -3,7 +3,7 @@ import Dict = NodeJS.Dict;
 import {generateIdSimpleV2} from "../Helpers/generateId";
 import CryptoPricesRepository from "../Repositories/CryptoPrices";
 import PriceKlineTick from "../Entities/PriceKlineTick";
-import {Subject, Subscription} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 
 export type AlertOperand = "<" | ">";
 
@@ -46,10 +46,10 @@ class ParentAlert {
     private subscription: Subscription;
     constructor(
         public coinId: string,
-        subject: Subject<PriceKlineTick>,
+        tickObservable: Observable<PriceKlineTick>,
         public alerts: Alert[] = [],
     ) {
-        this.subscription = subject.subscribe(data => {
+        this.subscription = tickObservable.subscribe(data => {
             for (let alert of this.alerts) {
                 alert.process(data);
             }
@@ -90,7 +90,7 @@ class PriceAlert {
         if (!this.alerts[coinId]) {
             this.alerts[coinId] = new ParentAlert(
                 coinId,
-                this.cryptoPriceRepo.getKlineSubject(coinId)
+                this.cryptoPriceRepo.getKlineTickEvent(coinId)
             );
         }
         const alert = new Alert(
