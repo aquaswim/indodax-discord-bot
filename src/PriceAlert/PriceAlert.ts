@@ -4,14 +4,15 @@ import {generateIdSimpleV2} from "../Helpers/generateId";
 import CryptoPricesRepository from "../Repositories/CryptoPrices";
 import PriceKlineTick from "../Entities/PriceKlineTick";
 import {Observable, Subscription} from "rxjs";
+import IAlert from "../Entities/Alert";
 
 export type AlertOperand = "<" | ">";
 
 export type AlertCallback = (data:PriceKlineTick, alert: Alert) => any;
 
-class Alert {
+class Alert implements IAlert{
     constructor(
-        private readonly id: string,
+        public readonly id: string,
         public readonly coinId: string,
         public readonly operand: AlertOperand,
         public readonly amount: number,
@@ -111,6 +112,19 @@ class PriceAlert {
             return;
         }
         throw new Error(`Coin Id ${id} Not Exists`);
+    }
+
+    listAlerts(): IAlert[]{
+        const results:IAlert[] = [];
+        for (let coinId in this.alerts) {
+            if (this.alerts.hasOwnProperty(coinId)) {
+                const _alert: ParentAlert = this.alerts[coinId]!;
+                for (let alert of _alert.alerts) {
+                    results.push(alert);
+                }
+            }
+        }
+        return results;
     }
 }
 
