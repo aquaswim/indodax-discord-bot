@@ -30,11 +30,18 @@ class SubjectWithLastUpdate<T> {
     }
 
     notify(updateTime: number, data: T) {
-        this.subject.next(data);
+        if (this.lastUpdate < updateTime) {
+            this.lastUpdate = updateTime;
+            this.subject.next(data);
+        }
     }
 
     hasObserver() {
         return this.subject.observers.length > 0;
+    }
+
+    complete() {
+        this.subject.complete();
     }
 }
 
@@ -54,14 +61,23 @@ class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
             console.error("Websocket connection to", kLineUrl, "error", err);
         })
         this.ws.on("close", (ws: Websocket, code: number, message: string) => {
-            console.error("Connection to", kLineUrl, "closed:", message)
+            console.error("Connection to", kLineUrl, "closed:", message, code)
         });
         this.ws.on("message", data => {
             const parsedData = JSON.parse(data.toString());
             if (parsedData.tick) {
                 const tickData = parsedData.tick as IWSTick;
                 if (this.subjectInfoDict.hasOwnProperty(tickData.pair)) {
-                    
+                    const subjectInfo = this.subjectInfoDict[tickData.pair]!;
+                    if (subjectInfo.hasObserver()) {
+                        subjectInfo.notify(tickData.t * 1000, tickData);
+                    } else {
+                        // if observer not found
+                        console.log("price detected in", tickData.pair, "but no observer found!");
+                        subjectInfo.complete();
+                        delete this.subjectInfoDict[tickData.pair];
+                        this._sendUnsubscribeCommand(tickData.pair);
+                    }
                 } else {
                     console.warn("Receiving message from", kLineUrl, "that unavailable in subject list");
                     this._sendUnsubscribeCommand(parsedData.tick);
@@ -73,10 +89,11 @@ class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
     }
 
     getKlineObserver(coinId: string): Observable<PriceKlineTick> {
-        if (this.subjectInfoDict.hasOwnProperty(coinId)) {
+        if (!this.subjectInfoDict.hasOwnProperty(coinId)) {
             // create new subject
             this.subjectInfoDict[coinId] = new SubjectWithLastUpdate<PriceKlineTick>()
-            // todo send subscribe command
+            // send subscribe command
+            this._sendSubscribeCommand(coinId);
         }
         return this.subjectInfoDict[coinId]!.getObservable();
     }
