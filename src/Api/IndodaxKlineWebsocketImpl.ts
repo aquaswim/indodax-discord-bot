@@ -59,9 +59,11 @@ class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
         });
         this.ws.on("error", err => {
             console.error("Websocket connection to", kLineUrl, "error", err);
+            this.ready = false;
         })
         this.ws.on("close", (ws: Websocket, code: number, message: string) => {
             console.error("Connection to", kLineUrl, "closed:", message, code)
+            this.ready = false;
         });
         this.ws.on("message", data => {
             const parsedData = JSON.parse(data.toString());
