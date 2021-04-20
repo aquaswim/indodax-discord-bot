@@ -47,45 +47,13 @@ class SubjectWithLastUpdate<T> {
 
 class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
     private ready: boolean;
-    private ws: WebSocket;
+    private ws?: WebSocket;
     private subjectInfoDict: Dict<SubjectWithLastUpdate<PriceKlineTick>> = {};
 
     constructor() {
         this.ready = false;
-        this.ws = new WebSocket(kLineUrl);
-        this.ws.once("open", () => {
-            console.log("Websocket connection to", kLineUrl, "opened");
-            this.ready = true;
-        });
-        this.ws.on("error", err => {
-            console.error("Websocket connection to", kLineUrl, "error", err);
-        })
-        this.ws.on("close", (ws: Websocket, code: number, message: string) => {
-            console.error("Connection to", kLineUrl, "closed:", message, code)
-        });
-        this.ws.on("message", data => {
-            const parsedData = JSON.parse(data.toString());
-            if (parsedData.tick) {
-                const tickData = parsedData.tick as IWSTick;
-                if (this.subjectInfoDict.hasOwnProperty(tickData.pair)) {
-                    const subjectInfo = this.subjectInfoDict[tickData.pair]!;
-                    if (subjectInfo.hasObserver()) {
-                        subjectInfo.notify(tickData.t * 1000, tickData);
-                    } else {
-                        // if observer not found
-                        console.log("price detected in", tickData.pair, "but no observer found!");
-                        subjectInfo.complete();
-                        delete this.subjectInfoDict[tickData.pair];
-                        this._sendUnsubscribeCommand(tickData.pair);
-                    }
-                } else {
-                    console.warn("Receiving message from", kLineUrl, "that unavailable in subject list");
-                    this._sendUnsubscribeCommand(parsedData.tick);
-                }
-            } else {
-                console.log("received non tick data", parsedData);
-            }
-        })
+        this._connectWs();
+        setInterval(()=>{this.ws?.close()}, 5000);
     }
 
     getKlineObserver(coinId: string): Observable<PriceKlineTick> {
@@ -115,7 +83,7 @@ class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
     private _sendUnsubscribeCommand(coidId: string) {
         this.wsMustReady();
         console.log("sending unsubscribe command for", coidId);
-        this.ws.send(JSON.stringify({
+        this.ws?.send(JSON.stringify({
             unsub: IndodaxKlineWebsocketImpl.generateSubChannelForId(coidId),
             id: coidId
         }));
@@ -124,10 +92,54 @@ class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
     private _sendSubscribeCommand(coidId: string) {
         this.wsMustReady();
         console.log("sending subscribe command for", coidId);
-        this.ws.send(JSON.stringify({
+        this.ws?.send(JSON.stringify({
             sub: IndodaxKlineWebsocketImpl.generateSubChannelForId(coidId),
             id: coidId
         }));
+    }
+
+    private _connectWs(){
+        this.ws = new WebSocket(kLineUrl);
+        this.ws.once("open", () => {
+            console.log("Websocket connection to", kLineUrl, "opened");
+            this.ready = true;
+            // re subscribe all coin
+            for (let coinId in this.subjectInfoDict) {
+                this._sendSubscribeCommand(coinId);
+            }
+        });
+        this.ws.on("error", err => {
+            console.error("Websocket connection to", kLineUrl, "error", err);
+            this.ws?.close();
+        })
+        this.ws.on("close", (ws: Websocket, code: number, message: string) => {
+            console.error("Connection to", kLineUrl, "closed:", message, code);
+            this.ready = false;
+            this._connectWs();
+        });
+        this.ws.on("message", data => {
+            const parsedData = JSON.parse(data.toString());
+            if (parsedData.tick) {
+                const tickData = parsedData.tick as IWSTick;
+                if (this.subjectInfoDict.hasOwnProperty(tickData.pair)) {
+                    const subjectInfo = this.subjectInfoDict[tickData.pair]!;
+                    if (subjectInfo.hasObserver()) {
+                        subjectInfo.notify(tickData.t * 1000, tickData);
+                    } else {
+                        // if observer not found
+                        console.log("price detected in", tickData.pair, "but no observer found!");
+                        subjectInfo.complete();
+                        delete this.subjectInfoDict[tickData.pair];
+                        this._sendUnsubscribeCommand(tickData.pair);
+                    }
+                } else {
+                    console.warn("Receiving message from", kLineUrl, "that unavailable in subject list");
+                    this._sendUnsubscribeCommand(parsedData.tick);
+                }
+            } else {
+                console.log("received non tick data", parsedData);
+            }
+        })
     }
 }
 
