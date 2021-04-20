@@ -53,7 +53,6 @@ class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
     constructor() {
         this.ready = false;
         this._connectWs();
-        setInterval(()=>{this.ws?.close()}, 5000);
     }
 
     getKlineObserver(coinId: string): Observable<PriceKlineTick> {
