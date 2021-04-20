@@ -23,7 +23,7 @@ Indodax discord bot
 2. list: list available coins (done)
 3. price: get current price info from coin (done)
 4. stop-alert: stop the configured alert (done)
-5. list-alert: list configured alert (tba)
+5. list-alert: list configured alert (done)
 
 # Build docker image
 just run the `build.sh` 🤞

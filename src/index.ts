@@ -8,6 +8,7 @@ import StopAlertHandler from "./Commands/StopAlert";
 import AlertHandler from "./Commands/Alert";
 import ListHandler from "./Commands/List";
 import GetPriceHandler from "./Commands/Price";
+import ListAlertHandler from "./Commands/ListAlert";
 
 // initialize dotenv
 config();
@@ -20,7 +21,8 @@ app
     .registerHandler("alert", AlertHandler)
     .registerHandler("stop-alert", StopAlertHandler)
     .registerHandler("list", ListHandler)
-    .registerHandler("price", GetPriceHandler);
+    .registerHandler("price", GetPriceHandler)
+    .registerHandler("list-alert", ListAlertHandler);
 
 // start the app
 app.start();
