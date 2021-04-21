@@ -123,7 +123,8 @@ class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
                 if (this.subjectInfoDict.hasOwnProperty(tickData.pair)) {
                     const subjectInfo = this.subjectInfoDict[tickData.pair]!;
                     if (subjectInfo.hasObserver()) {
-                        subjectInfo.notify(tickData.t * 1000, tickData);
+                        tickData.t = tickData.t * 1000;
+                        subjectInfo.notify(tickData.t, tickData);
                     } else {
                         // if observer not found
                         console.log("price detected in", tickData.pair, "but no observer found!");
