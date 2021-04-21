@@ -10,7 +10,8 @@
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test"
   },
   "keywords": [
-    "discord-bot", "indodax-bot"
+    "discord-bot",
+    "indodax-bot"
   ],
   "author": "Bayu Setiawan",
   "license": "MIT",
@@ -38,6 +39,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.7",
     "tsyringe": "^4.5.0",
+    "winston": "^3.3.3",
     "ws": "^7.4.4"
   }
 }

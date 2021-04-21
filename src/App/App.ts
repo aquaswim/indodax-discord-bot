@@ -4,6 +4,7 @@ import {ICommandParser} from "./CommandParser";
 import Dict = NodeJS.Dict;
 import ICommandHandler from "../Contracts/CommandHandler";
 import InjectionToken from "tsyringe/dist/typings/providers/injection-token";
+import logger from "./Logger";
 
 @singleton()
 class App {
@@ -17,14 +18,14 @@ class App {
 
     start() {
         this.discordClient.on("error", (err) => {
-            console.error("Discord Client Error", err);
+            logger.error(err);
         });
         this.discordClient.on("ready", ()=> {
-            console.error("Logged in as", this.discordClient.user?.tag);
+            logger.info("Logged in as", this.discordClient.user!.tag);
         });
         this.discordClient.on("message", this.processMessages.bind(this));
         this.discordClient.login(process.env.DISCORD_TOKEN)
-            .catch((err) => console.error("Login error", err));
+            .catch((err) => logger.error(err));
     }
 
     private async processMessages(msg: Message){
@@ -41,13 +42,14 @@ class App {
                     embed: (new MessageEmbed())
                         .setTitle("Command error")
                         .setDescription(e.message)
-                })
+                });
+                logger.error(e);
             }
         }
     }
 
     public registerHandler(command: string, handler: ICommandHandler | InjectionToken<ICommandHandler>): App {
-        console.log("register command", command);
+        logger.info("register command", command);
         if ((<ICommandHandler>handler).handle) {
             this.handlerDict[command] = handler as ICommandHandler;
         } else {

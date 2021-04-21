@@ -4,6 +4,7 @@ import PriceKlineTick from "../Entities/PriceKlineTick";
 import WebSocket from "ws";
 import Websocket from "ws";
 import Dict = NodeJS.Dict;
+import logger from "../App/Logger";
 
 const kLineUrl = "wss://kline.indodax.com/ws/";
 
@@ -81,7 +82,7 @@ class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
 
     private _sendUnsubscribeCommand(coidId: string) {
         this.wsMustReady();
-        console.log("sending unsubscribe command for", coidId);
+        logger.info("sending unsubscribe command for", coidId);
         this.ws?.send(JSON.stringify({
             unsub: IndodaxKlineWebsocketImpl.generateSubChannelForId(coidId),
             id: coidId
@@ -90,7 +91,7 @@ class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
 
     private _sendSubscribeCommand(coidId: string) {
         this.wsMustReady();
-        console.log("sending subscribe command for", coidId);
+        logger.info("sending subscribe command for", coidId);
         this.ws?.send(JSON.stringify({
             sub: IndodaxKlineWebsocketImpl.generateSubChannelForId(coidId),
             id: coidId
@@ -100,7 +101,7 @@ class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
     private _connectWs(){
         this.ws = new WebSocket(kLineUrl);
         this.ws.once("open", () => {
-            console.log("Websocket connection to", kLineUrl, "opened");
+            logger.info("Websocket connection to", kLineUrl, "opened");
             this.ready = true;
             // re subscribe all coin
             for (let coinId in this.subjectInfoDict) {
@@ -108,11 +109,11 @@ class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
             }
         });
         this.ws.on("error", err => {
-            console.error("Websocket connection to", kLineUrl, "error", err);
+            logger.error(err);
             this.ws?.close();
         })
         this.ws.on("close", (ws: Websocket, code: number, message: string) => {
-            console.error("Connection to", kLineUrl, "closed:", message, code);
+            logger.error(new Error(`Websocket connection to ${ws.url} closed ${message} ${code}`));
             this.ready = false;
             this._connectWs();
         });
@@ -127,17 +128,17 @@ class IndodaxKlineWebsocketImpl implements IndodaxKlineWebsocket {
                         subjectInfo.notify(tickData.t, tickData);
                     } else {
                         // if observer not found
-                        console.log("price detected in", tickData.pair, "but no observer found!");
+                        logger.info("price detected in", tickData.pair, "but no observer found!");
                         subjectInfo.complete();
                         delete this.subjectInfoDict[tickData.pair];
                         this._sendUnsubscribeCommand(tickData.pair);
                     }
                 } else {
-                    console.warn("Receiving message from", kLineUrl, "that unavailable in subject list");
+                    logger.warning("Receiving message from", kLineUrl, "that unavailable in subject list");
                     this._sendUnsubscribeCommand(parsedData.tick);
                 }
             } else {
-                console.log("received non tick data", parsedData);
+                logger.info("received non tick data", parsedData);
             }
         })
     }
