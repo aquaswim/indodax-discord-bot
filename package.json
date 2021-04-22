@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "node dist",
     "dev": "ts-node-dev --rs --respawn src",
-    "test": "mocha -r ts-node/register tests/**/*.test.ts",
+    "test": "NODE_ENV=test mocha -r ts-node/register tests/**/*.test.ts",
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test"
   },
   "keywords": [
