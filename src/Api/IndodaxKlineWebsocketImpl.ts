@@ -1,4 +1,4 @@
-import IndodaxKlineWebsocket from "./IndodaxKlineWebsocket";
+import IndodaxKlineWebsocket from "../Contracts/IndodaxKlineWebsocket";
 import {Observable, Subject} from "rxjs";
 import PriceKlineTick from "../Entities/PriceKlineTick";
 import WebSocket from "ws";
