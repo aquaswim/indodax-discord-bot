@@ -1,7 +1,7 @@
 import {inject, singleton} from "tsyringe";
 import Dict = NodeJS.Dict;
 import {generateIdSimpleV2} from "../Helpers/generateId";
-import CryptoPricesRepository from "../Repositories/CryptoPrices";
+import CryptoPricesRepository from "../Contracts/CryptoPriceRepository";
 import PriceKlineTick from "../Entities/PriceKlineTick";
 import {Observable, Subscription} from "rxjs";
 import IAlert from "../Entities/Alert";

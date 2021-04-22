@@ -1,4 +1,4 @@
-import CryptoPricesRepository from "./CryptoPrices";
+import CryptoPricesRepository from "../Contracts/CryptoPriceRepository";
 import {CoinInfo} from "../Entities/CoinInfo";
 import PriceKlineTick from "../Entities/PriceKlineTick";
 import CoinDetail from "../Entities/CoinDetail";

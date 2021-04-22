@@ -1,7 +1,7 @@
 import ICommandHandler, {HandlerResult} from "../Contracts/CommandHandler";
 import {inject, injectable} from "tsyringe";
 import CommandMessage from "../Entities/CommandMessage";
-import CryptoPricesRepository from "../Repositories/CryptoPrices";
+import CryptoPricesRepository from "../Contracts/CryptoPriceRepository";
 import {MessageEmbed} from "discord.js";
 
 @injectable()
