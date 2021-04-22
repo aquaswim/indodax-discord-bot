@@ -1,10 +1,10 @@
 import {container, inject, singleton} from "tsyringe";
 import {Client, Message, MessageEmbed} from "discord.js";
-import {ICommandParser} from "./CommandParser";
 import Dict = NodeJS.Dict;
 import ICommandHandler from "../Contracts/CommandHandler";
 import InjectionToken from "tsyringe/dist/typings/providers/injection-token";
 import logger from "./Logger";
+import ICommandParser from "../Contracts/CommandParser";
 
 @singleton()
 class App {

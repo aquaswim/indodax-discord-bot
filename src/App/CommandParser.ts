@@ -1,9 +1,6 @@
 import {Message} from "discord.js";
 import CommandMessage from "../Entities/CommandMessage";
-
-export interface ICommandParser {
-    parseMessage(msg: Message): CommandMessage;
-}
+import ICommandParser from "../Contracts/CommandParser";
 
 export class CommandParser implements ICommandParser{
     constructor(private prefix = process.env.PREFIX || "&") {
