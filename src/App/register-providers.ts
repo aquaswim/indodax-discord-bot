@@ -4,7 +4,7 @@ import {CommandParser} from "./CommandParser";
 import IndodaxCryptoPrices from "../Repositories/IndodaxCryptoPrices";
 import {Lifecycle} from "tsyringe";
 import IndodaxApiImpl from "../Api/IndodaxApiImpl";
-import IndodaxKlineWebsocketImpl from "../Api/IndodaxKlineWebsocketImpl";
+import IndodaxKlinePooling from "../Api/IndodaxKlinePooling";
 
 // register all class
 container.register(Client, {
@@ -28,5 +28,5 @@ container.register("IndodaxApi", {
 });
 
 container.register("IndodaxKlineWebsocket", {
-    useClass: IndodaxKlineWebsocketImpl
+    useClass: IndodaxKlinePooling
 });
