@@ -7,7 +7,7 @@
     "start": "node dist",
     "dev": "ts-node-dev --rs --respawn src",
     "test": "NODE_ENV=test mocha -r ts-node/register src/**/*.spec.ts --exit",
-    "coverage": "nyc -x \"*.spec.ts\" npm run test"
+    "coverage": "nyc -x \"**/*.spec.ts\" npm run test"
   },
   "keywords": [
     "discord-bot",
