@@ -1,9 +1,10 @@
-import IndodaxKlineWebsocket from "./IndodaxKlineWebsocket";
 import {Observable, Subject} from "rxjs";
 import PriceKlineTick from "../Entities/PriceKlineTick";
 import Dict = NodeJS.Dict;
 import fetchJson from "../Helpers/jsonFetch";
-import Logger from "../App/Logger";
+import IndodaxKlineWebsocket from "../Contracts/IndodaxKlineWebsocket";
+import {inject} from "tsyringe";
+import Logger from "../Contracts/Logger";
 
 const TICKERURL = "https://indodax.com/api/ticker_all";
 
@@ -26,9 +27,12 @@ interface ITickerResponse {
 class IndodaxKlinePooling implements IndodaxKlineWebsocket{
     private readonly subjectDict: Dict<Subject<PriceKlineTick>>;
     private timer: NodeJS.Timeout | number;
-    constructor(intervalMs = 600000) {
+    constructor(
+        @inject("Logger") private logger: Logger,
+        intervalMs = 600000
+    ) {
         this.subjectDict = {};
-        this.priceUpdate().catch(err => Logger.error(err))
+        this.priceUpdate().catch(err => this.logger.error(err))
         this.timer = setInterval(this.priceUpdate.bind(this), intervalMs);
     }
 

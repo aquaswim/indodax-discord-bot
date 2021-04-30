@@ -1,11 +1,11 @@
-import CryptoPricesRepository from "./CryptoPrices";
+import CryptoPricesRepository from "../Contracts/CryptoPriceRepository";
 import {CoinInfo} from "../Entities/CoinInfo";
 import PriceKlineTick from "../Entities/PriceKlineTick";
 import CoinDetail from "../Entities/CoinDetail";
 import _ from "lodash";
 import {inject, injectable} from "tsyringe";
-import IndodaxApi from "../Api/IndodaxApi";
-import IndodaxKlineWebsocket from "../Api/IndodaxKlineWebsocket";
+import IndodaxApi from "../Contracts/IndodaxApi";
+import IndodaxKlineWebsocket from "../Contracts/IndodaxKlineWebsocket";
 import {Observable} from "rxjs";
 
 // coin list response parser goes here

@@ -1,4 +1,5 @@
 import winston from "winston";
+import Logger from "../Contracts/Logger";
 
 const logger = winston.createLogger({
     level: "info",
@@ -15,7 +16,7 @@ const logger = winston.createLogger({
     ]
 });
 
-class Logger{
+class LoggerImpl implements Logger{
     constructor() {
     }
 
@@ -36,4 +37,4 @@ class Logger{
     }
 }
 
-export default new Logger();
+export default LoggerImpl;
