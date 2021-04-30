@@ -5,7 +5,6 @@ import CryptoPricesRepository from "../Contracts/CryptoPriceRepository";
 import PriceKlineTick from "../Entities/PriceKlineTick";
 import {Observable, Subscription} from "rxjs";
 import IAlert from "../Entities/Alert";
-import logger from "../App/Logger";
 
 export type AlertOperand = "<" | ">";
 
@@ -37,7 +36,7 @@ class Alert implements IAlert{
                 isTriggered = data.c > this.amount;
                 break;
             default:
-                logger.warning("unknown operand", this.operand, "in", this.id);
+                throw new Error(`unknown operand ${this.operand} in ${this.id}`);
         }
         if (isTriggered)
             return this.callback(data, this);

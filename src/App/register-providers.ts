@@ -5,6 +5,7 @@ import IndodaxCryptoPrices from "../Repositories/IndodaxCryptoPrices";
 import {Lifecycle} from "tsyringe";
 import IndodaxApiImpl from "../Api/IndodaxApiImpl";
 import IndodaxKlineWebsocketImpl from "../Api/IndodaxKlineWebsocketImpl";
+import WinstonLogger from "./LoggerImpl";
 
 // register all class
 container.register(Client, {
@@ -12,6 +13,10 @@ container.register(Client, {
         retryLimit: 10
     })
 });
+
+container.register("Logger", {
+    useClass: WinstonLogger
+})
 
 container.register("ICommandParser", {
     useClass: CommandParser
