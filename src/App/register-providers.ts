@@ -33,5 +33,9 @@ container.register("IndodaxApi", {
 });
 
 container.register("IndodaxKlineWebsocket", {
-    useClass: IndodaxKlinePooling
+    useFactory: (c) => {
+        return new IndodaxKlinePooling(
+            c.resolve("Logger")
+        );
+    }
 });
