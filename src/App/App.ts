@@ -1,30 +1,32 @@
 import {container, inject, singleton} from "tsyringe";
 import {Client, Message, MessageEmbed} from "discord.js";
-import {ICommandParser} from "./CommandParser";
 import Dict = NodeJS.Dict;
 import ICommandHandler from "../Contracts/CommandHandler";
 import InjectionToken from "tsyringe/dist/typings/providers/injection-token";
+import ICommandParser from "../Contracts/CommandParser";
+import Logger from "../Contracts/Logger";
 
 @singleton()
 class App {
     private readonly handlerDict: Dict<ICommandHandler>;
     constructor(
         private discordClient: Client,
-        @inject("ICommandParser") private cmdParser: ICommandParser
+        @inject("ICommandParser") private cmdParser: ICommandParser,
+        @inject("Logger") private logger: Logger
     ) {
         this.handlerDict = {};
     }
 
     start() {
         this.discordClient.on("error", (err) => {
-            console.error("Discord Client Error", err);
+            this.logger.error(err);
         });
         this.discordClient.on("ready", ()=> {
-            console.error("Logged in as", this.discordClient.user?.tag);
+            this.logger.info("Logged in as", this.discordClient.user!.tag);
         });
         this.discordClient.on("message", this.processMessages.bind(this));
         this.discordClient.login(process.env.DISCORD_TOKEN)
-            .catch((err) => console.error("Login error", err));
+            .catch((err) => this.logger.error(err));
     }
 
     private async processMessages(msg: Message){
@@ -41,13 +43,14 @@ class App {
                     embed: (new MessageEmbed())
                         .setTitle("Command error")
                         .setDescription(e.message)
-                })
+                });
+                this.logger.error(e);
             }
         }
     }
 
     public registerHandler(command: string, handler: ICommandHandler | InjectionToken<ICommandHandler>): App {
-        console.log("register command", command);
+        this.logger.info("register command", command);
         if ((<ICommandHandler>handler).handle) {
             this.handlerDict[command] = handler as ICommandHandler;
         } else {

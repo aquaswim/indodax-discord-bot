@@ -1,4 +1,4 @@
-import IndodaxApi, {Response} from "./IndodaxApi";
+import IndodaxApi, {Response} from "../Contracts/IndodaxApi";
 import fetchJson from "../Helpers/jsonFetch";
 
 const URL_PAIR = "https://indodax.com/api/pairs";

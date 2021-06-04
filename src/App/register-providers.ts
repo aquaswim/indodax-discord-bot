@@ -4,6 +4,8 @@ import {CommandParser} from "./CommandParser";
 import IndodaxCryptoPrices from "../Repositories/IndodaxCryptoPrices";
 import {Lifecycle} from "tsyringe";
 import IndodaxApiImpl from "../Api/IndodaxApiImpl";
+import WinstonLogger from "./LoggerImpl";
+import IndodaxKlinePooling from "../Api/IndodaxKlinePooling";
 
 // register all class
 container.register(Client, {
@@ -11,6 +13,10 @@ container.register(Client, {
         retryLimit: 10
     })
 });
+
+container.register("Logger", {
+    useClass: WinstonLogger
+})
 
 container.register("ICommandParser", {
     useClass: CommandParser
@@ -24,4 +30,12 @@ container.register("CryptoPricesRepository", {
 
 container.register("IndodaxApi", {
     useClass: IndodaxApiImpl
+});
+
+container.register("IndodaxKlineWebsocket", {
+    useFactory: (c) => {
+        return new IndodaxKlinePooling(
+            c.resolve("Logger")
+        );
+    }
 });

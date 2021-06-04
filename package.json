@@ -6,11 +6,12 @@
     "build": "tsc",
     "start": "node dist",
     "dev": "ts-node-dev --rs --respawn src",
-    "test": "mocha -r ts-node/register tests/**/*.test.ts",
-    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test"
+    "test": "NODE_ENV=test mocha -r ts-node/register src/**/*.spec.ts --exit",
+    "coverage": "nyc -x \"**/*.spec.ts\" npm run test"
   },
   "keywords": [
-    "discord-bot", "indodax-bot"
+    "discord-bot",
+    "indodax-bot"
   ],
   "author": "Bayu Setiawan",
   "license": "MIT",
@@ -38,6 +39,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.7",
     "tsyringe": "^4.5.0",
-    "ws": "^7.4.6"
+    "ws": "^7.4.6",
+    "winston": "^3.3.3"
   }
 }

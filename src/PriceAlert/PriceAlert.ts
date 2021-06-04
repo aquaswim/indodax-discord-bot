@@ -1,17 +1,18 @@
 import {inject, singleton} from "tsyringe";
 import Dict = NodeJS.Dict;
 import {generateIdSimpleV2} from "../Helpers/generateId";
-import CryptoPricesRepository from "../Repositories/CryptoPrices";
+import CryptoPricesRepository from "../Contracts/CryptoPriceRepository";
 import PriceKlineTick from "../Entities/PriceKlineTick";
-import {Subject, Subscription} from "rxjs";
+import {Observable, Subscription} from "rxjs";
+import IAlert from "../Entities/Alert";
 
 export type AlertOperand = "<" | ">";
 
 export type AlertCallback = (data:PriceKlineTick, alert: Alert) => any;
 
-class Alert {
+class Alert implements IAlert{
     constructor(
-        private readonly id: string,
+        public readonly id: string,
         public readonly coinId: string,
         public readonly operand: AlertOperand,
         public readonly amount: number,
@@ -35,7 +36,7 @@ class Alert {
                 isTriggered = data.c > this.amount;
                 break;
             default:
-                console.error("unknown operand", this.operand, "in", this.id);
+                throw new Error(`unknown operand ${this.operand} in ${this.id}`);
         }
         if (isTriggered)
             return this.callback(data, this);
@@ -46,10 +47,10 @@ class ParentAlert {
     private subscription: Subscription;
     constructor(
         public coinId: string,
-        subject: Subject<PriceKlineTick>,
+        tickObservable: Observable<PriceKlineTick>,
         public alerts: Alert[] = [],
     ) {
-        this.subscription = subject.subscribe(data => {
+        this.subscription = tickObservable.subscribe(data => {
             for (let alert of this.alerts) {
                 alert.process(data);
             }
@@ -90,7 +91,7 @@ class PriceAlert {
         if (!this.alerts[coinId]) {
             this.alerts[coinId] = new ParentAlert(
                 coinId,
-                this.cryptoPriceRepo.getKlineSubject(coinId)
+                this.cryptoPriceRepo.getKlineTickEvent(coinId)
             );
         }
         const alert = new Alert(
@@ -111,6 +112,19 @@ class PriceAlert {
             return;
         }
         throw new Error(`Coin Id ${id} Not Exists`);
+    }
+
+    listAlerts(): IAlert[]{
+        const results:IAlert[] = [];
+        for (let coinId in this.alerts) {
+            if (this.alerts.hasOwnProperty(coinId)) {
+                const _alert: ParentAlert = this.alerts[coinId]!;
+                for (let alert of _alert.alerts) {
+                    results.push(alert);
+                }
+            }
+        }
+        return results;
     }
 }
 
