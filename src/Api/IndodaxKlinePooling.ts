@@ -33,7 +33,7 @@ class IndodaxKlinePooling implements IndodaxKlineWebsocket{
     ) {
         this.subjectDict = {};
         this.priceUpdate().catch(err => this.logger.error(err))
-        this.timer = setInterval(this.priceUpdate.bind(this), intervalMs);
+        this.timer = setInterval(()=>this.priceUpdate().catch(err => this.logger.error(err)), intervalMs);
     }
 
     private async priceUpdate(){
